@@ -1,0 +1,51 @@
+using System;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+
+class Program
+{
+    static readonly HttpClient client = new HttpClient();
+
+    static async Task Main()
+    {
+        var uri = new Uri("https://course-example.atlassian.net/rest/api/3/issue");
+
+        var base64Token = Convert.ToBase64String(Encoding.ASCII.GetBytes("victor.moraes@squadhub.com.br:ATATT3xFfGF0tcU6lt36oCRAXnfzXzEFAkfyHUn3pvXw6m8tvmY9kTKuo4lf5m8ZUNkhV3QyEAbpAaG_bS4ucrBixpSbi8sSd1H2msCflbLvDaO1b6T2lL6O670_ZMMXMGZP-D_OMvk9qNYVB59TRBC08P95P7MdgufZV1ZjB4a_cpKAjqJu4vQ=1A123A11"));
+        client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", base64Token);
+
+        var jsonPayload = @"{
+            ""fields"": {
+                ""project"": {
+                    ""key"": ""KAN""
+                },
+                ""summary"": ""hello world"",
+                ""description"": {
+                    ""type"": ""doc"",
+                    ""version"": 1,
+                    ""content"": [
+                        {
+                            ""type"": ""paragraph"",
+                            ""content"": [
+                                {
+                                    ""text"": ""Detalhes apenas"",
+                                    ""type"": ""text""
+                                }
+                            ]
+                        }
+                    ]
+                },
+                ""issuetype"": {
+                    ""name"": ""Tarefa""
+                },  
+                ""duedate"": ""2020-12-01""  
+            }
+        }";
+
+        var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+        var response = await client.PostAsync(uri, content);
+
+        var responseJson = await response.Content.ReadAsStringAsync();
+        Console.WriteLine(responseJson);
+    }
+}
